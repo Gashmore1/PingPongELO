@@ -1,2 +1,4 @@
 environment
 exec.sh
+main.py
+conf.json
