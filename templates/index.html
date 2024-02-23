@@ -1,0 +1,46 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Ping Pong ELO</title>
+  </head>
+
+  <body onload=init()>
+    <datalist id="names">
+      {%for player in players%}
+      <option value="{{ player['name'] }}"></option>
+      {%endfor%}
+    </datalist>
+    <form action="/result">
+      <table id="score_form">
+        <tr>
+          <th>Player 1</th>
+          <th>Score</th>
+          <th> - </th>
+          <th>Score</th>
+          <th>Player 2</th>
+        </tr>
+        <tr>
+          <th><input list="names" id="player_1" name="player_1" /></th>
+          <th><input type="number" id="score_1" name="score_1" min="0" max="11"></th>
+          <th> - </th>
+          <th><input type="number" id="score_2" name="score_2" min="0" max="11"></th>
+          <th><input list="names" id="player_2" name="player_2" /></th>
+        </tr>
+      </table>
+      <input type="submit" value="Submit">
+    </form>
+    <table id="leader_board">
+      <tr>
+        <th>Place</th>
+        <th>Name</th>
+      </tr>
+      {%for player in players%}
+        <tr class="player">
+          <th class="player_place">{{ player["place"] }}</th>
+          <th class="player_name">{{ player["name"] }}</th>
+        </tr>
+        <br>
+      {%endfor%}
+    </table>
+  </body>
+</html>
