@@ -8,12 +8,12 @@ import json
 from datetime import datetime
 
 app = Flask(__name__)
-# Connection details will be in spark-sumbit command
-spark = SparkSession.builder.getOrCreate()
 
 @app.route("/")
 def index():
     """Input form for new scores along with a leader board."""
+    # Connection details will be in spark-sumbit command
+    spark = SparkSession.builder.getOrCreate()  
 
     # Dataframe returned from spark
     players = [
@@ -50,4 +50,4 @@ def create():
     return redirect(url_for("index"))
 
 if __name__ == "__main__":
-  app.run()
+  app.run(host="0.0.0.0", debug=True)
