@@ -2,3 +2,4 @@ environment
 exec.sh
 main.py
 conf.json
+nohup.out
