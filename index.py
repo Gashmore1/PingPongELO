@@ -17,7 +17,7 @@ from datetime import datetime
 
 app = Flask(__name__)
 LEARNING_RATE = 20
-PROBABILITY_CORRECTION = 20
+PROBABILITY_CORRECTION = 100
 
 with open("conf.json", "r") as f:
     pg_configuration = json.load(f)
@@ -52,7 +52,7 @@ def new_rankings(ranking_a, ranking_b, change_rate, win):
     return results
 
 def get_player_score(name, df):
-    if name in df.name:
+    if name in df.name.values:
         filter_name = df.name == name
         user_details = df.where(filter_name).sort_values("game_number", ascending=False).iloc[0]
         return user_details.rating
