@@ -16,7 +16,8 @@ from pprint import pprint
 from datetime import datetime
 
 app = Flask(__name__)
-LEARNING_RATE = 50
+LEARNING_RATE = 20
+PROBABILITY_CORRECTION = 20
 
 with open("conf.json", "r") as f:
     pg_configuration = json.load(f)
@@ -37,7 +38,7 @@ schema = [
     ]
 
 def expected_result(ranking_a, ranking_b):
-    expected_result_a = 1/(1 + np.power(10,(ranking_b-ranking_a)/100))
+    expected_result_a = 1/(1 + np.power(10,(ranking_b-ranking_a)/PROBABILITY_CORRECTION))
     return expected_result_a
 
 def new_rankings(ranking_a, ranking_b, change_rate, win):
