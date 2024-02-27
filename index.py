@@ -122,13 +122,29 @@ def create():
     if request.method == 'POST':
         player_1 = request.form["player_1"]
         player_2 = request.form["player_2"]
-        score_1 = int(request.form["score_1"])
-        score_2 = int(request.form["score_2"])
+        score_1 = request.form["score_1"]
+        score_2 = request.form["score_2"]
     else:
         player_1 = request.args.get("player_1")
         player_2 = request.args.get("player_2")
-        score_1 = int(request.args.get("score_1"))
-        score_2 = int(request.args.get("score_2"))
+        score_1 = request.args.get("score_1")
+        score_2 = request.args.get("score_2")
+
+    player_1 = player_1.strip()
+    player_2 = player_2.strip()
+
+    try:
+        score_1 = max(int(score_1),0])
+        score_2 = max([int(score_2),0])
+    except Exception as e:
+        return redirect(url_for("index"))
+
+    if player_1 == "":
+        return redirect(url_for("index"))
+
+    if player_2 == "":
+        return redirect(url_for("index"))
+
 
     #Use method to calculate score to append new scores
     ratings = add_game_result(player_1, player_2, score_1, score_2, ratings)
@@ -139,4 +155,4 @@ def create():
     return redirect(url_for("index"))
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", debug=True)
+    app.run(host="0.0.0.0")
