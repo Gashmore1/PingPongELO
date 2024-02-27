@@ -134,7 +134,7 @@ def create():
     player_2 = player_2.strip()
 
     try:
-        score_1 = max(int(score_1),0])
+        score_1 = max([int(score_1),0])
         score_2 = max([int(score_2),0])
     except Exception as e:
         return redirect(url_for("index"))
