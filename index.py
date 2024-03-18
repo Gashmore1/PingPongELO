@@ -93,7 +93,7 @@ def add_game_result(player_a, player_b, player_a_score, player_b_score, df):
 
 def leader_board(data):
     leader_board = data.sort_values("game_number", ascending=False).drop_duplicates(subset=["name"]).sort_values("rating", ascending=False)
-    return [{"place": index+1, "name": leader_board.name.values[index]} for index in range(len(leader_board))]
+    return [{"place": index+1, "name": leader_board.name.values[index], "ranking": round(leader_board.rating.values[index],1)} for index in range(len(leader_board))]
 
 @app.route("/")
 def index():

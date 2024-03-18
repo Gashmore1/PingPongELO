@@ -33,11 +33,13 @@
       <tr>
         <th>Place</th>
         <th>Name</th>
+        <th>Ranking</th>
       </tr>
       {%for player in players%}
         <tr class="player">
           <th class="player_place">{{ player["place"] }}</th>
           <th class="player_name">{{ player["name"] }}</th>
+          <th class="player_ranking">{{ player["ranking"] }}</th>
         </tr>
       {%endfor%}
     </table>
