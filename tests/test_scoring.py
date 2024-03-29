@@ -14,10 +14,9 @@ class TestScore(unittest.TestCase):
 
     def setUp(self):
         with self.db.engine.connect() as conn:
-            conn.execute(text(f"delete from {self.db.DB_TABLES["ratings"]}"))
-            conn.execute(text(f"delete from {self.db.DB_TABLES["games"]}"))
+            conn.execute(text(f"delete from {self.db.db_tables["ratings"]}"))
+            conn.execute(text(f"delete from {self.db.db_tables["games"]}"))
             conn.commit()
-
 
     def test_get_player(self):
         self.assertEqual(list(self.db.get_players()), [])
