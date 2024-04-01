@@ -1,0 +1,19 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Ping Pong ELO</title>
+		<meta charset="UTF-8">
+		<link rel="stylesheet" href="{{ url_for('static', filename='styles/main.css') }}">
+  </head>
+
+  <body>
+		{% include 'task_bar.html' %}
+		<div class="games">
+		{% for game in games %}
+				{% with game=game %}
+					{% include 'game_element.html' %}
+				{% endwith %}
+		{% endfor %}
+		</div>
+	</body>
+</html>

@@ -2,46 +2,37 @@
 <html>
   <head>
     <title>Ping Pong ELO</title>
+		<meta charset="UTF-8">
+		<link rel="stylesheet" href="{{ url_for('static', filename='styles/main.css') }}">
   </head>
 
-  <body onload=init()>
+  <body>
+		{% include 'task_bar.html' %}
     <datalist id="names">
       {%for player in players%}
       <option value="{{ player['name'] }}"></option>
       {%endfor%}
     </datalist>
-    <form action="/result">
-      <table id="score_form">
-        <tr>
-          <th>Player 1</th>
-          <th>Score</th>
-          <th> - </th>
-          <th>Score</th>
-          <th>Player 2</th>
-        </tr>
+    <form action="/result" class="score_form">
+      <table id="score_form">  
         <tr>
           <th><input list="names" id="player_1" name="player_1" /></th>
-          <th><input type="number" id="score_1" name="score_1" min="0" max="11"></th>
+          <th><input type="number" id="score_1" name="score_1" min="0"></th>
           <th> - </th>
-          <th><input type="number" id="score_2" name="score_2" min="0" max="11"></th>
+          <th><input type="number" id="score_2" name="score_2" min="0"></th>
           <th><input list="names" id="player_2" name="player_2" /></th>
         </tr>
       </table>
-      <input type="submit" value="Submit">
+			<div>
+				<input type="submit" value="Submit">
+			</div>
     </form>
-    <table id="leader_board">
-      <tr>
-        <th>Place</th>
-        <th>Name</th>
-        <th>Ranking</th>
-      </tr>
-      {%for player in players%}
-        <tr class="player">
-          <th class="player_place">{{ player["place"] }}</th>
-          <th class="player_name">{{ player["name"] }}</th>
-          <th class="player_ranking">{{ player["ranking"] }}</th>
-        </tr>
+    <div id="recent_games"> 
+			{%for game in games%}
+				{% with game=game %}
+					{% include 'game_element.html' %}
+				{% endwith %}
       {%endfor%}
-    </table>
+    </div>
   </body>
 </html>

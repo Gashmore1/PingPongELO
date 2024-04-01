@@ -1,0 +1,19 @@
+<div class="game">
+  <div class="game_time">{{ game[0]["time"] }}</div>
+	<div class="game_results">
+		<div class="game_player">
+			<a href="/players/{{ game[0]["name"] }}" style="text-decoration:none" class="game_name">{{ game[0]["name"] }}</a>
+			<div class="game_score">{{ game[0]["score"] }}</div>
+		</div>
+		<div class="game_player">
+			<div class="game_score">{{ game[1]["score"] }}</div>
+			<a href="/players/{{ game[1]["name"] }}" style="text-decoration:none" class="game_name">{{ game[1]["name"] }}</a>
+		</div>
+	</div>
+	{% if editing %}
+		<div class="game_actions">
+			<a href="/edit/{{ game[0]["game_id"] }}" class="game_edit" style="text-decoration:none">&#9999;&#65039;</a>
+			<a href="/delete/{{ game[0]["game_id"] }}" class="game_delete">&#128465;</a>
+		</div>
+	{% endif %}
+</div>

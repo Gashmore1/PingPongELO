@@ -24,6 +24,15 @@ class Scoring:
         "game_id"
     ]
 
+    time_approximations = {
+        "Now": 0,
+        "~Minute ago": 3 * 60,
+        "~Hour ago": 60 * 60,
+        "~Day ago": 24 * 60 * 60,
+        "~Week ago": 7 * 24 * 60 * 60,
+        "In a galaxy far, far away...": 2 * 7 * 24 * 60 * 60
+    }
+
     def __init__(self, connection_conf):
         db_user_name = connection_conf["username"]
         db_password = quote_plus(connection_conf["password"])
@@ -70,7 +79,13 @@ class Scoring:
         leader_board = rating_data_frame\
         .sort_values("game_id", ascending=False)\
         .drop_duplicates(subset=["name"])\
-        .sort_values("rating", ascending=False)
+        .sort_values("rating", ascending=False)\
+        .to_dict('records')
+
+        for index, player in enumerate(leader_board):
+            leader_board[index]["rating"] = round(leader_board[index]["rating"], 1)
+            leader_board[index]["ranking"] = index+1
+
         return leader_board
 
     def get_player_rating(self, name, game_id=None):
@@ -135,7 +150,7 @@ class Scoring:
 
             result = max(scores)/sum(scores)
 
-            if max(scores) == scores[0]:
+            if max(scores) == scores[1]:
                 result = 1 - result
 
             player_a = rankings[0] + self.learning_rate * ((result) - (expected_result))
@@ -189,6 +204,52 @@ class Scoring:
                 affected_game_ids_set.update(self.__get_affected_games__(game))
 
         return affected_game_ids_set
+
+    def get_games(self, limit=None, start_id=None):
+        with self.engine.connect() as conn:
+            games_data_frame = pd.read_sql(
+                sql=f"select * from {self.db_tables["games"]}",
+                con=conn,
+                columns=self.GAME_SCHEMA
+            )\
+            .sort_values(
+                "game_id", ascending=False
+            )
+
+            if start_id:
+                games_data_frame = games_data_frame\
+                .drop(game_data_frame[~(game_data_frame.game_id <= start_id)].index)
+
+            if limit:
+                games_data_frame = games_data_frame.head(2*limit) 
+
+            games_data_frame = games_data_frame.to_dict('records')
+
+            games = []
+
+            for game_index in range(0, len(games_data_frame), 2):
+                current_time = time.time()
+                game_time = games_data_frame[game_index]["time"]
+                
+                time_difference =  current_time - game_time
+
+                time_increments =  np.array(list(self.time_approximations.values()))
+
+                time_distances = np.abs(time_increments - time_difference)
+
+                time_closest = np.argmin(time_distances)
+
+                time_comment = list(self.time_approximations.keys())[time_closest]
+
+                games_data_frame[game_index]["time"] = time_comment
+                games_data_frame[game_index+1]["time"] = time_comment
+
+                games.append(
+                    [games_data_frame[game_index], games_data_frame[game_index+1]]
+                )
+
+            return games
+
 
     def get_game(self, game_id):
         with self.engine.connect() as conn:

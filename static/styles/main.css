@@ -1,0 +1,144 @@
+body {
+  margin: 0;
+  padding: 0;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  color: #444;
+}
+
+.taskbar {
+	margin: auto;
+  width: 50%;	
+	display: flex;
+	justify-content: center;
+	padding: 1% 25%;
+	background-color: #111;
+}
+
+.taskbar a {
+    justify-content: center;
+    text-align: center;
+		color: #FFF;
+		display: flex;
+		margin: 0% auto;
+}
+
+.score_form {
+	margin: 1% auto 2% auto;
+	width: 50%;
+}
+
+.score_form table {
+	display: flex;
+	justify-content: center;
+}
+
+.score_form div {
+	display: flex;
+}
+
+.score_form div input {
+	margin: auto;
+	display: flex;
+	justify-content: center;
+}
+
+#recent_games {
+	display: flex;
+	justify-content: center;
+	flex-direction: column;
+	margin: 1% 0%;
+}
+
+.games {
+	display: flex;
+	justify-content: center;
+	flex-direction: column;
+	margin: 1% auto;
+}
+
+.game {
+	width: 50%;
+	border-style: none none none solid;
+	border-width: 0px 2px;
+	display: flex;
+	justify-content: center;
+	margin: 0.1% auto;
+	background-color: #F4F4F4;
+	padding: 0.5% 0.5%;
+	flex-flow: column;
+}
+
+.game_results {
+	display: flex;
+}
+
+.game_time {
+	display: flex;
+	justify-content: right;
+	color: #AAA;
+	font-size: small;
+}
+
+.game_player {
+	display: flex;
+	width: 100%;
+}
+
+.game_player * {
+	width: 50%;
+	justify-content: center;
+	display: flex;
+}
+
+.game_actions {
+	display: flex;
+	justify-content: right;
+}
+
+.game_actions * {
+	margin: 0 0 0 1%;
+}
+
+.players {
+	margin: 1%;
+	display: flex;
+	flex-direction: column;
+}
+
+.player {
+	margin: 0.1% auto;
+  justify-content: left;
+  display: flex;
+  width: 50%;
+	background-color: #F4F4F4;
+	border-style: none none none solid;
+	border-width: 0px 2px;
+}
+
+.player a {
+	width: 100%;
+	margin: 1%;
+}
+
+.player_details {
+	display: flex;
+	flex-direction: column;
+}
+
+.player_details div {
+	display: flex;
+	flex-direction: row;
+}
+
+.player_rank {
+	font-size: x-large;
+}
+
+.player_rating {
+	display: flex;
+	margin-left: auto;
+}
+
+a {
+	color: black;
+}
