@@ -27,10 +27,10 @@ class TestScore(unittest.TestCase):
 
     def test_add_game(self):
         self.db.add_game_result(("Me","You"),(11,11))
-        self.assertEqual(list(self.db.get_players()), ["Me", "You"])
-        ratings = list(self.db.get_ratings().rating.values)
-        self.assertEqual(sum(ratings), 200)
-        rating_difference = ratings[0] - ratings[1]
+        self.assertEqual(set(list(self.db.get_players())), set(["Me", "You"]))
+        ratings = list(self.db.get_ratings())
+        self.assertEqual(sum([rating["rating"] for rating in ratings]), 200)
+        rating_difference = ratings[0]["rating"] - ratings[1]["rating"]
         self.assertEqual(rating_difference, 0)
         # Test that the winner gains points
 
@@ -40,15 +40,15 @@ class TestScore(unittest.TestCase):
         self.db.edit_game(game_id, ("Me","You"),(11,0))
         new_game_id = self.db.get_latest_game_id()
         self.assertEqual(game_id, new_game_id)
-        ratings = list(self.db.get_ratings().rating.values)
-        self.assertNotEqual(ratings[0],ratings[1])
+        ratings = list(self.db.get_ratings())
+        self.assertNotEqual(ratings[0]["rating"],ratings[1]["rating"])
 
         self.db.add_game_result(("Me","You"),(11,11))
-        ratings = list(self.db.get_ratings().rating.values)
-        self.assertNotEqual(ratings[0],ratings[1])
+        ratings = list(self.db.get_ratings())
+        self.assertNotEqual(ratings[0]["rating"],ratings[1]["rating"])
         self.db.edit_game(new_game_id, ("Me", "You"), (11,11))
-        ratings = list(self.db.get_ratings().rating.values)
-        self.assertEqual(ratings[0],ratings[1])
+        ratings = list(self.db.get_ratings())
+        self.assertEqual(ratings[0]["rating"],ratings[1]["rating"])
 
     def test_delete_game(self):
         # Delete most recent Entry
@@ -62,12 +62,14 @@ class TestScore(unittest.TestCase):
         first_game_id = self.db.get_latest_game_id()
         self.db.add_game_result(("Me", "Them"),(11,11))
         self.db.add_game_result(("You", "Her"),(11,11))
-        ratings = list(self.db.get_ratings().rating.values)
+        ratings = list(self.db.get_ratings())
+        ratings = [rating["rating"] for rating in ratings]
         self.assertNotEqual(ratings[0], ratings[1])
         self.assertNotEqual(ratings[1], ratings[2])
         self.assertNotEqual(ratings[2], ratings[3])
         self.db.delete_game(first_game_id)
-        ratings = list(self.db.get_ratings().rating.values)
+        ratings = list(self.db.get_ratings())
+        ratings = [rating["rating"] for rating in ratings]
         self.assertEqual(ratings[0], ratings[1])
         self.assertEqual(ratings[1], ratings[2])
         self.assertEqual(ratings[2], ratings[3])
