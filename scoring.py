@@ -266,7 +266,7 @@ class Scoring:
         result_pairings = zip(players, scores)
 
         if not play_time:
-            current_time = time.time()
+            play_time = time.time()
 
         if not game_id:
             game_id = self.get_latest_game_id() + 1
