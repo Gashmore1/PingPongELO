@@ -10,10 +10,14 @@
 			<a href="/players/{{ game[1]["name"] }}" style="text-decoration:none" class="game_name">{{ game[1]["name"] }}</a>
 		</div>
 	</div>
-	{% if editing %}
-		<div class="game_actions">
+	<div class="game_actions">
+		{% if editing %}
 			<a href="/edit/{{ game[0]["game_id"] }}" class="game_edit" style="text-decoration:none">&#9999;&#65039;</a>
 			<a href="/delete/{{ game[0]["game_id"] }}" class="game_delete">&#128465;</a>
-		</div>
-	{% endif %}
+		{% else %}
+			<div>
+				&nbsp;
+			</div>
+		{% endif %}
+	</div>
 </div>

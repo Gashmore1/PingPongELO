@@ -50,7 +50,7 @@ class Scoring:
     def get_players(self):
         with self.engine.connect() as conn:
             rating_data_frame = pd.read_sql(
-                sql=f"select distinct name from {self.db_tables["ratings"]}",
+                sql=f"select distinct name from {self.db_tables['ratings']}",
                 con=conn,
                 columns=self.RATING_SCHEMA
             )
@@ -59,7 +59,7 @@ class Scoring:
     def get_player(self, name):
         with self.engine.connect() as conn:
             rating_data_frame = pd.read_sql(
-                sql=f"select distinct name from {self.db_tables["ratings"]} where name = '{name}'",
+                sql=f"select distinct name from {self.db_tables['ratings']} where name = '{name}'",
                 con=conn,
                 columns=self.RATING_SCHEMA
             )
@@ -72,7 +72,7 @@ class Scoring:
     def get_ratings(self):
         with self.engine.connect() as conn:
             rating_data_frame = pd.read_sql(
-                sql=f"select name, rating, game_id from {self.db_tables["ratings"]}",
+                sql=f"select name, rating, game_id from {self.db_tables['ratings']}",
                 con=conn,
                 columns=self.RATING_SCHEMA
             )
@@ -92,7 +92,7 @@ class Scoring:
         with self.engine.connect() as conn:
             if game_id:
                 rating_data_frame = pd.read_sql(
-                    sql=f"select name, rating, game_id from {self.db_tables["ratings"]}",
+                    sql=f"select name, rating, game_id from {self.db_tables['ratings']}",
                     con=conn,
                     columns=self.RATING_SCHEMA
                 )
@@ -113,7 +113,7 @@ class Scoring:
 
             else:
                 rating_data_frame = pd.read_sql(
-                    sql=f"select name, rating, game_id from {self.db_tables["ratings"]}",
+                    sql=f"select name, rating, game_id from {self.db_tables['ratings']}",
                     con=conn,
                     columns=self.RATING_SCHEMA
                 )
@@ -134,7 +134,7 @@ class Scoring:
             # Remove old rating
             with self.engine.connect() as conn:
                 conn.execute(
-                    text(f"delete from {self.db_tables["ratings"]} where game_id = {game}")
+                    text(f"delete from {self.db_tables['ratings']} where game_id = {game}")
                 )
                 conn.commit()
             # Get game data
@@ -182,7 +182,7 @@ class Scoring:
         for player in game_data_frame.name.values:
             with self.engine.connect() as conn:
                 affected_games_data_frame = pd.read_sql(
-                    sql=f"select name, game_id from {self.db_tables["games"]}",
+                    sql=f"select name, game_id from {self.db_tables['games']}",
                     con=conn,
                     columns=self.GAME_SCHEMA
                 )
@@ -208,7 +208,7 @@ class Scoring:
     def get_games(self, limit=None, start_id=None):
         with self.engine.connect() as conn:
             games_data_frame = pd.read_sql(
-                sql=f"select * from {self.db_tables["games"]}",
+                sql=f"select * from {self.db_tables['games']}",
                 con=conn,
                 columns=self.GAME_SCHEMA
             )\
@@ -254,16 +254,19 @@ class Scoring:
     def get_game(self, game_id):
         with self.engine.connect() as conn:
             game_data_frame = pd.read_sql(
-                sql=f"select * from {self.db_tables["games"]} where game_id = {game_id}",
+                sql=f"select * from {self.db_tables['games']} where game_id = {game_id}",
                 con=conn,
                 columns=self.GAME_SCHEMA
             )
 
         return game_data_frame
 
-    def add_game_result(self, players, scores, play_time=time.time(), game_id=None):
+    def add_game_result(self, players, scores, play_time=None, game_id=None):
         game_results = []
         result_pairings = zip(players, scores)
+
+        if not play_time:
+            current_time = time.time()
 
         if not game_id:
             game_id = self.get_latest_game_id() + 1
@@ -292,7 +295,7 @@ class Scoring:
         # Delete game entry
         with self.engine.connect() as conn:
             play_time = pd.read_sql(
-                sql=f"select time, game_id from {self.db_tables["games"]}",
+                sql=f"select time, game_id from {self.db_tables['games']}",
                 con=conn,
                 columns=self.GAME_SCHEMA
             )
@@ -304,10 +307,10 @@ class Scoring:
 
         with self.engine.connect() as conn:
             conn.execute(
-                text(f"delete from {self.db_tables["games"]} where game_id = {game_id}")
+                text(f"delete from {self.db_tables['games']} where game_id = {game_id}")
             )
             conn.execute(
-                text(f"delete from {self.db_tables["ratings"]} where game_id = {game_id}")
+                text(f"delete from {self.db_tables['ratings']} where game_id = {game_id}")
             )
             conn.commit()
         # Write new entry
@@ -318,10 +321,10 @@ class Scoring:
 
         with self.engine.connect() as conn:
             conn.execute(
-                text(f"delete from {self.db_tables["games"]} where game_id = {game_id};")
+                text(f"delete from {self.db_tables['games']} where game_id = {game_id};")
             )
             conn.execute(
-                text(f"delete from {self.db_tables["ratings"]} where game_id = {game_id};")
+                text(f"delete from {self.db_tables['ratings']} where game_id = {game_id};")
             )
             conn.commit()
 
@@ -336,7 +339,7 @@ class Scoring:
     def get_latest_game_id(self):
         with self.engine.connect() as conn:
             game_data_frame = pd.read_sql(
-                sql=f"select game_id from {self.db_tables["games"]} order by game_id desc limit 1",
+                sql=f"select game_id from {self.db_tables['games']} order by game_id desc limit 1",
                 con=conn,
                 columns=self.GAME_SCHEMA
             )

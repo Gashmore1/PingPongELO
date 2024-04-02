@@ -10,6 +10,8 @@ with open("conf.json", "r") as f:
 
 scoring = Scoring(pg_configuration)
 
+editing=False
+
 @app.route("/")
 def index():
     """Input form for new scores along with a leader board.""" 
@@ -18,7 +20,7 @@ def index():
     games = scoring.get_games(10)
     players = scoring.get_ratings()
 
-    return stream_template("index.html", games=games, players=players, editing=True)
+    return stream_template("index.html", games=games, players=players, editing=editing)
 
 @app.route("/result", methods=("GET", "POST"))
 def create():
@@ -56,7 +58,7 @@ def edit(id):
 
 @app.route("/delete/<id>")
 def delete(id):
-    if id:
+    if id and editing:
         scoring.delete_game(int(id))
 
     return redirect(url_for("index"))
@@ -69,7 +71,7 @@ def game(id=None):
 
     games = scoring.get_games()
 
-    return stream_template("games.html", games=games, editing=True)
+    return stream_template("games.html", games=games, editing=editing)
 
 @app.route("/players")
 @app.route("/players/<name>")
