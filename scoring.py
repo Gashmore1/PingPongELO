@@ -9,6 +9,9 @@ from sqlalchemy import create_engine, text
 
 import numpy as np
 
+from tqdm import tqdm
+from pprint import pprint
+
 class Scoring:
     GAME_SCHEMA = [
         "player_number",
@@ -52,6 +55,7 @@ class Scoring:
             rating_data_frame = pd.read_sql(
                 sql=f"select distinct name from {self.db_tables['ratings']}",
                 con=conn,
+
                 columns=self.RATING_SCHEMA
             )
         return rating_data_frame.name.values
@@ -59,15 +63,25 @@ class Scoring:
     def get_player(self, name):
         with self.engine.connect() as conn:
             rating_data_frame = pd.read_sql(
-                sql=f"select distinct name from {self.db_tables['ratings']} where name = '{name}'",
+                sql=f"select name, game_id from {self.db_tables['ratings']} where name = '{name}'",
                 con=conn,
                 columns=self.RATING_SCHEMA
             )
             rating_data_frame = rating_data_frame\
             .drop(
                 rating_data_frame[~(rating_data_frame.name == name)].index
-            )
-        return rating_data_frame.name.values
+            )\
+            .to_dict("records")
+
+        return rating_data_frame
+
+    def is_stale(self,player):
+        age = self.age(self.get_game(player["game_id"]).head(1).time.values[0])
+
+        if age < 4 * list(self.time_approximations.values())[-1]:
+            return True
+        else:
+            return False
 
     def get_ratings(self):
         with self.engine.connect() as conn:
@@ -81,6 +95,8 @@ class Scoring:
         .drop_duplicates(subset=["name"])\
         .sort_values("rating", ascending=False)\
         .to_dict('records')
+
+        leader_board = list(filter(self.is_stale, leader_board))
 
         for index, player in enumerate(leader_board):
             leader_board[index]["rating"] = round(leader_board[index]["rating"], 1)
@@ -129,8 +145,11 @@ class Scoring:
         return rating_data_frame.rating.values[0]
 
     def calculate_ratings(self, game_id):
-        list_of_new_games = sorted(list(self.__get_affected_games__(game_id)))
-        for game in list_of_new_games:
+        print(game_id)
+        list_of_new_games = sorted(list(self.__get_affected_games__(game_id))) 
+        print(len(list_of_new_games))
+
+        for game in tqdm(list_of_new_games):
             # Remove old rating
             with self.engine.connect() as conn:
                 conn.execute(
@@ -179,29 +198,26 @@ class Scoring:
         game_data_frame = self.get_game(game_id)
         affected_game_ids_set = set([game_id])
 
-        for player in game_data_frame.name.values:
-            with self.engine.connect() as conn:
-                affected_games_data_frame = pd.read_sql(
-                    sql=f"select name, game_id from {self.db_tables['games']}",
-                    con=conn,
-                    columns=self.GAME_SCHEMA
-                )
+        with self.engine.connect() as conn:
+            affected_games_data_frame = pd.read_sql(
+                sql=f"select name, game_id from {self.db_tables['games']}",
+                con=conn,
+                columns=self.GAME_SCHEMA
+            )
 
-                affected_games_data_frame = affected_games_data_frame\
-                .drop(
-                    affected_games_data_frame
-                    [
-                        ~(
-                            (affected_games_data_frame.name == player) &
-                            (affected_games_data_frame.game_id > game_id)
-                        )
-                    ]
-                    .index
-                )\
-                .sort_values("game_id", ascending=True)
+            affected_games_data_frame = affected_games_data_frame\
+            .drop(
+                affected_games_data_frame
+                [
+                ~(affected_games_data_frame.game_id > game_id)
+                ]
+                .index
+            )\
+            .sort_values("game_id", ascending=True)
 
-            for game in list(affected_games_data_frame.game_id.values):
-                affected_game_ids_set.update(self.__get_affected_games__(game))
+        affected_game_ids_set.update(affected_games_data_frame.game_id.values)
+            #for game in list(affected_games_data_frame.game_id.values):
+            #    affected_game_ids_set.update(self.__get_affected_games__(game))
 
         return affected_game_ids_set
 
@@ -231,11 +247,11 @@ class Scoring:
                 current_time = time.time()
                 game_time = games_data_frame[game_index]["time"]
                 
-                time_difference =  current_time - game_time
+                age = self.age(game_time)
 
                 time_increments =  np.array(list(self.time_approximations.values()))
 
-                time_distances = np.abs(time_increments - time_difference)
+                time_distances = np.abs(time_increments - age)
 
                 time_closest = np.argmin(time_distances)
 
@@ -250,6 +266,9 @@ class Scoring:
 
             return games
 
+    def age(self, play_time):
+        current_time = time.time()
+        return current_time - play_time
 
     def get_game(self, game_id):
         with self.engine.connect() as conn:
@@ -348,3 +367,35 @@ class Scoring:
             return 0
 
         return game_data_frame.game_id.values[0]
+
+    def get_players_last_game(self, name):
+        with self.engine.connect() as conn:
+            game_data_frame = pd.read_sql(
+                sql=f"select game_id, player_number, name, score, time from {self.db_tables['games']}",
+                con=conn,
+                columns=self.GAME_SCHEMA
+            )
+
+        game_data_frame = game_data_frame\
+        .drop(
+            game_data_frame
+                [
+                    ~(
+                        (game_data_frame.name == name)
+                    )
+                ]
+                .index
+            ).sort_values("game_id", ascending=False)\
+            .head(1)\
+            .to_dict('records')
+
+        return game_data_frame
+
+if __name__ == "__main__":
+    import json
+    with open("conf.json", "r") as f:
+        pg_configuration = json.load(f)
+
+    game = Scoring(pg_configuration)
+
+    pprint(game.get_ratings())

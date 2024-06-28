@@ -5,3 +5,5 @@ conf.json
 nohup.out
 __pycache__
 *.pyc
+conf_test.json
+pipshell.nix

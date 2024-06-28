@@ -15,8 +15,6 @@ editing=False
 @app.route("/")
 def index():
     """Input form for new scores along with a leader board.""" 
-
-    # Dataframe returned from spark
     games = scoring.get_games(10)
     players = scoring.get_ratings()
 

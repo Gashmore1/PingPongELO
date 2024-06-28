@@ -5,17 +5,16 @@ from sqlalchemy import text
 
 from scoring import Scoring
 
-
 class TestScore(unittest.TestCase):
 
-    with open("conf.json", "r") as f:
+    with open("conf_test.json", "r") as f:
         config = json.load(f)
         db = Scoring(config)
 
     def setUp(self):
         with self.db.engine.connect() as conn:
-            conn.execute(text(f"delete from {self.db.db_tables["ratings"]}"))
-            conn.execute(text(f"delete from {self.db.db_tables["games"]}"))
+            conn.execute(text(f"delete from {self.db.db_tables['ratings']}"))
+            conn.execute(text(f"delete from {self.db.db_tables['games']}"))
             conn.commit()
 
     def test_get_player(self):
