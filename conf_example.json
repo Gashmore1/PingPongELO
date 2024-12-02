@@ -1,0 +1,12 @@
+
+{
+  "url": "",
+  "port": "",
+	"username": "",
+	"password": "",
+	"dbname": "",
+	"table": {
+		"ratings": "",
+		"games": ""
+	}
+}
