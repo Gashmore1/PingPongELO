@@ -1,12 +1,22 @@
 pipeline {
-    agent any
+		agent {
+				kubernetes {
+						yaml '''
+						spec:
+							containers:
+							- name: docker-build
+								image: docker:dind
+						'''
+				}
+		}
 
-    stages {
+		stages {
         stage('Build') {
             steps {
                 echo 'Building..'
 								sh 'ls .'
 								sh 'pwd'
+								sh 'docker'
             }
         }
         stage('Test') {
