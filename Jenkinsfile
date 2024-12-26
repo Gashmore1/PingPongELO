@@ -7,6 +7,7 @@ pipeline {
         containers:
         - name: dind
           image: docker:dind
+          tty: true
           securityContext:
             allowPrivilegeEscalation: true
             privileged: true
@@ -16,16 +17,20 @@ pipeline {
 	stages {
 		stage('Build') {
 			steps {
-				echo 'Building..'
-				sh 'docker build -t pingpongelo .'
-      }
+        container('dind') {
+				  echo 'Building..'
+				  sh 'docker build -t pingpongelo .'
+        }
+			}
     }
     stage('Test') {
       steps {
-				echo 'Testing..'
-				sh 'docker run pingpongelo python tests/test_scoring.py'
-				echo 'It failed'
-      }
+        container('dind') {
+				  echo 'Testing..'
+				  sh 'docker run pingpongelo python tests/test_scoring.py'
+				  echo 'It failed'
+        }
+			}
     }
     stage('Deploy') {
       steps {
