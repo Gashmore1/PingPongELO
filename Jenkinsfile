@@ -24,6 +24,7 @@ pipeline {
       steps {
 				echo 'Testing..'
 				sh 'docker run pingpongelo python tests/test_scoring.py'
+				echo 'It failed'
       }
     }
     stage('Deploy') {
