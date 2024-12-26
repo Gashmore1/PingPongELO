@@ -7,9 +7,9 @@ pipeline {
         containers:
         - name: dind
           image: docker:dind
-					securityContext:
-						allowPrivilegeEscalation: true
-						privileged: true
+          securityContext:
+            allowPrivilegeEscalation: true
+            privileged: true
 '''
 		}
 	}
