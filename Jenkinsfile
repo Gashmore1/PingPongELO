@@ -1,6 +1,7 @@
 pipeline {
 		agent {
 				kubernetes {
+						inheritFrom 'default'
 						yaml '''
 						spec:
 							containers:
