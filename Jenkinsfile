@@ -1,34 +1,35 @@
 pipeline {
-		agent {
-				kubernetes {
-						inheritFrom 'default'
-						yaml '''
-spec:
-	containers:
-		- name: docker-build
-			image: docker:dind
-						'''
-				}
+	agent {
+		kubernetes {
+			inheritFrom 'default'
+			yaml '''
+      spec:
+        containers:
+        - name: dind
+          image: docker:dind
+					securityContext:
+						allowPrivilegeEscalation: true
+						privileged: true
+'''
 		}
-
-		stages {
-        stage('Build') {
-            steps {
-                echo 'Building..'
-								sh 'ls .'
-								sh 'pwd'
-								sh 'docker'
-            }
-        }
-        stage('Test') {
-            steps {
-                echo 'Testing..'
-            }
-        }
-        stage('Deploy') {
-            steps {
-                echo 'Deploying....'
-						}
-        }
+	}
+	stages {
+		stage('Build') {
+			steps {
+				echo 'Building..'
+				sh 'docker build -t pingpongelo .'
+      }
     }
+    stage('Test') {
+      steps {
+				echo 'Testing..'
+				sh 'docker run pingpongelo python tests/test_scoring.py'
+      }
+    }
+    stage('Deploy') {
+      steps {
+        echo 'Deploying....'
+			}
+    }
+  }
 }
