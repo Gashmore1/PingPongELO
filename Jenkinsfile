@@ -3,10 +3,10 @@ pipeline {
 				kubernetes {
 						inheritFrom 'default'
 						yaml '''
-						spec:
-							containers:
-							- name: docker-build
-								image: docker:dind
+spec:
+	containers:
+		- name: docker-build
+			image: docker:dind
 						'''
 				}
 		}
