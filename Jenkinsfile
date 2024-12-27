@@ -15,7 +15,7 @@ pipeline {
 		}
 	}
 	environment {
-		DATABASE_CONFIG = credentials('conf_test.json')
+		DATABASE_CONFIG = credentials('testing_credentials')
 	}
 	stages {
 		stage('Build') {
