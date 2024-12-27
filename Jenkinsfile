@@ -14,6 +14,9 @@ pipeline {
 '''
 		}
 	}
+	environment {
+		DATABASE_CONFIG = credentials('conf_test.json')
+	}
 	stages {
 		stage('Build') {
 			steps {
@@ -27,7 +30,7 @@ pipeline {
       steps {
         container('dind') {
 				  echo 'Testing..'
-				  sh 'docker run pingpongelo python tests/test_scoring.py'
+				  sh "docker run pingpongelo -v $DATABASE_CONFIG:/home/app/conf_test.json python -m unittest tests/test_scoring.py"
 				  echo 'It failed'
         }
 			}
