@@ -13,6 +13,8 @@ from tqdm import tqdm
 from pprint import pprint
 
 class Scoring:
+    INITAL_RATING = 100
+
     GAME_SCHEMA = [
         "player_number",
         "name",
@@ -135,12 +137,12 @@ class Scoring:
                 )
 
                 rating_data_frame = rating_data_frame\
-                .drop(rating_data_frame[~(rating_data_frame.name == name)])\
+                .drop(rating_data_frame[~(rating_data_frame.name == name)].index)\
                 .sort_values("game_id", ascending=False)\
                 .head(1)
 
         if rating_data_frame.empty:
-            return 100
+            return self.INITAL_RATING
 
         return rating_data_frame.rating.values[0]
 
