@@ -30,7 +30,7 @@ pipeline {
       steps {
         container('dind') {
 				  echo 'Testing..'
-				  sh "docker run -v $DATABASE_CONFIG:/home/app/conf_test.json pingpongelo python -m unittest tests/test_scoring.py"
+				  sh "docker run -v $DATABASE_CONFIG:/home/app/conf_test.json pingpongelo pytest"
         }
 			}
     }
