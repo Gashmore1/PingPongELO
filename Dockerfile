@@ -8,17 +8,18 @@ RUN mkdir -p /var/log/flask-app && touch /var/log/flask-app/flask-app.err.log &&
 WORKDIR /home/app
 
 # copy all the files to the container
-COPY __init__.py game.py index.py player.py requirements.txt scoring.py .
+COPY requirements.txt .
+COPY src src
 COPY tests tests
-COPY templates templates
-COPY static static
-COPY __pycache__ __pycache__
+COPY pyproject.toml .
+COPY pytest.ini .
 
 # python setup
 RUN export FLASK_APP=scoring.py
 RUN pip install -r requirements.txt
+RUN python -m build && pip install dist/pingpongelo-*.tar.gz
 
 # define the port number the container should expose
 EXPOSE 3000
 
-CMD ["python", "index.py"]
+CMD ["python", "src/PingPongELO/index.py"]
